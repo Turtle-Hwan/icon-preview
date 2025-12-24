@@ -9,6 +9,8 @@ Preview icons directly in your VS Code editor gutter or inline. Perfect for Reac
 - **JSDoc @preview Tags**: Works with `@preview` tags in component definitions
 - **Customizable**: Adjust icon size, color, and display position
 
+![Gutter Preview Example](asset/example-gutter.png)
+
 ## How It Works
 
 When you import a component that has a `@preview` tag in its JSDoc comment, the icon preview will appear in the gutter (or inline) where you use that component.

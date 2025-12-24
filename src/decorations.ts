@@ -59,9 +59,14 @@ export async function updateDecorations(editor: vscode.TextEditor): Promise<void
                         },
                     });
                 } else {
+                    // gutter 모드: before + absolute로 줄 번호 왼쪽에 표시
                     decorationType = vscode.window.createTextEditorDecorationType({
-                        gutterIconPath: vscode.Uri.file(imagePath),
-                        gutterIconSize: 'contain',
+                        before: {
+                            contentIconPath: vscode.Uri.file(imagePath),
+                            width: `${config.imageSize}px`,
+                            height: `${config.imageSize}px`,
+                            textDecoration: `none; position: absolute; left: -${config.imageSize + 8}px; z-index: 9999;`,
+                        },
                     });
                 }
 
