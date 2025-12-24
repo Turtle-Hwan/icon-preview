@@ -2,7 +2,7 @@ import * as vscode from 'vscode';
 import { log } from './logger';
 import { getConfig } from './config';
 import { downloadImage } from './imageDownloader';
-import { findImportedSymbolsWithPreview } from './symbolResolver';
+import { findImportedSymbolsWithPreview, SymbolInfo } from './symbolResolver';
 
 const decorationTypes = new Map<string, vscode.TextEditorDecorationType>();
 
@@ -39,47 +39,55 @@ export async function updateDecorations(editor: vscode.TextEditor): Promise<void
     });
 
     try {
-        const previewUrls = await findImportedSymbolsWithPreview(document);
-        log(`Found ${previewUrls.size} symbols with @preview`);
+        const symbols = await findImportedSymbolsWithPreview(document);
+        log(`Found ${symbols.length} symbols with @preview`);
 
-        for (const [lineIndex, url] of previewUrls) {
+        for (const symbolInfo of symbols) {
             try {
-                const imagePath = await downloadImage(url);
-                const key = `${document.uri.toString()}:${lineIndex}`;
+                const imagePath = await downloadImage(symbolInfo.url);
+                const key = `${document.uri.toString()}:${symbolInfo.line}:${symbolInfo.column}`;
 
                 let decorationType: vscode.TextEditorDecorationType;
+                let range: vscode.Range;
 
                 if (config.position === 'inline') {
+                    // inline 모드: 컴포넌트명 바로 뒤에 아이콘 표시
                     decorationType = vscode.window.createTextEditorDecorationType({
-                        before: {
+                        after: {
                             contentIconPath: vscode.Uri.file(imagePath),
-                            width: `${config.imageSize}px`,
-                            height: `${config.imageSize}px`,
-                            textDecoration: `none; position: absolute; z-index: 1; margin-top: -${config.imageSize}px; pointer-events: none;`,
+                            margin: '0 0 0 4px',
+                            width: '1em',
+                            height: '1em',
                         },
                     });
+                    // 컴포넌트명 끝 위치에 range 설정
+                    range = new vscode.Range(
+                        symbolInfo.line,
+                        symbolInfo.column,
+                        symbolInfo.line,
+                        symbolInfo.column
+                    );
                 } else {
                     // gutter 모드: VSCode 공식 gutterIconPath 사용
                     decorationType = vscode.window.createTextEditorDecorationType({
                         gutterIconPath: vscode.Uri.file(imagePath),
                         gutterIconSize: 'contain',
                     });
+                    const line = document.lineAt(symbolInfo.line);
+                    range = new vscode.Range(symbolInfo.line, 0, symbolInfo.line, line.text.length);
                 }
 
                 decorationTypes.set(key, decorationType);
 
-                const line = document.lineAt(lineIndex);
-                const range = new vscode.Range(lineIndex, 0, lineIndex, line.text.length);
-
                 editor.setDecorations(decorationType, [
                     {
                         range,
-                        hoverMessage: new vscode.MarkdownString(`![preview](${url})`),
+                        hoverMessage: new vscode.MarkdownString(`![preview](${symbolInfo.url})`),
                     },
                 ]);
-                log(`Decoration applied at line ${lineIndex} (${config.position}) for: ${url}`);
+                log(`Decoration applied at line ${symbolInfo.line}, col ${symbolInfo.column} (${config.position}) for: ${symbolInfo.url}`);
             } catch (error) {
-                log(`Failed to load image for line ${lineIndex}: ${error}`);
+                log(`Failed to load image for line ${symbolInfo.line}: ${error}`);
             }
         }
     } catch (error) {

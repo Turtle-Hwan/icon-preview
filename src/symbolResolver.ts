@@ -1,10 +1,16 @@
 import * as vscode from 'vscode';
 import { log } from './logger';
 
+export interface SymbolInfo {
+    line: number;
+    column: number; // 컴포넌트명 끝 위치
+    url: string;
+}
+
 export async function findImportedSymbolsWithPreview(
     document: vscode.TextDocument
-): Promise<Map<number, string>> {
-    const result = new Map<number, string>();
+): Promise<SymbolInfo[]> {
+    const result: SymbolInfo[] = [];
     const text = document.getText();
 
     // 멀티라인 import 문에서 심볼 찾기 (개행 포함)
@@ -45,7 +51,11 @@ export async function findImportedSymbolsWithPreview(
             const position = document.positionAt(usageMatch.index + 1);
             const line = position.line;
 
-            if (result.has(line)) {
+            // 컴포넌트명 끝 위치 계산: <Symbol 에서 Symbol 끝
+            const componentEndColumn = position.character + symbol.length;
+
+            // 이미 같은 위치에 있으면 스킵
+            if (result.some((r) => r.line === line && r.column === componentEndColumn)) {
                 continue;
             }
 
@@ -88,8 +98,8 @@ export async function findImportedSymbolsWithPreview(
 
                     if (previewMatch) {
                         const previewUrl = previewMatch[1].startsWith('data:') ? previewMatch[1] : previewMatch[1];
-                        log(`Found @preview for ${symbol} at line ${line}: ${previewUrl.substring(0, 50)}...`);
-                        result.set(line, previewUrl);
+                        log(`Found @preview for ${symbol} at line ${line}, col ${componentEndColumn}: ${previewUrl.substring(0, 50)}...`);
+                        result.push({ line, column: componentEndColumn, url: previewUrl });
                     } else {
                         log(`No @preview found in definition for ${symbol}`);
                     }
