@@ -65,6 +65,12 @@
             "Show icon inline before the code (does not overlap with breakpoints)"
           ],
           "description": "Where to display the preview icon"
+        },
+        "iconPreview.cacheMaxAgeDays": {
+          "type": "number",
+          "default": 7,
+          "minimum": 1,
+          "description": "Maximum age of cached images in days. Older cache files will be automatically cleaned up."
         }
       }
     }
