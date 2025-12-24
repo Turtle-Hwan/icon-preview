@@ -1,0 +1,54 @@
+{
+  "name": "jsdoc-image-preview",
+  "displayName": "JSDoc Image Preview",
+  "description": "Preview images from JSDoc @preview tags in the gutter",
+  "version": "0.1.0",
+  "publisher": "hankim",
+  "engines": {
+    "vscode": "^1.74.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onLanguage:javascript",
+    "onLanguage:typescript",
+    "onLanguage:javascriptreact",
+    "onLanguage:typescriptreact"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "configuration": {
+      "title": "JSDoc Image Preview",
+      "properties": {
+        "jsdocImagePreview.enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable/disable image preview in gutter"
+        },
+        "jsdocImagePreview.imageSize": {
+          "type": "number",
+          "default": 16,
+          "description": "Size of the gutter icon in pixels"
+        },
+        "jsdocImagePreview.svgColor": {
+          "type": "string",
+          "default": "#ffffff",
+          "description": "Color to use for SVG icons (replaces currentColor)"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "package": "vsce package"
+  },
+  "devDependencies": {
+    "@types/node": "^18.0.0",
+    "@types/vscode": "^1.74.0",
+    "typescript": "^5.0.0",
+    "@vscode/vsce": "^2.22.0"
+  }
+}
