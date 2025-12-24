@@ -4,6 +4,10 @@
   "description": "Preview icons in the gutter from @preview tags - supports Lucide and more",
   "version": "0.1.0",
   "publisher": "turtle-hwan",
+  "author": {
+    "name": "Turtle-Hwan",
+    "url": "https://github.com/Turtle-Hwan"
+  },
   "engines": {
     "vscode": "^1.74.0"
   },
