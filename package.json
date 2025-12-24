@@ -2,7 +2,7 @@
   "name": "icon-preview",
   "displayName": "Icon Preview",
   "description": "Preview icons in the gutter from @preview tags - supports Lucide and more",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "publisher": "turtle-hwan",
   "author": {
     "name": "Turtle-Hwan",
@@ -58,7 +58,10 @@
         },
         "iconPreview.position": {
           "type": "string",
-          "enum": ["gutter", "inline"],
+          "enum": [
+            "gutter",
+            "inline"
+          ],
           "default": "gutter",
           "enumDescriptions": [
             "Show icon in the gutter (left of line numbers, may overlap with breakpoints)",
