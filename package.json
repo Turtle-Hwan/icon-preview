@@ -11,10 +11,7 @@
     "Other"
   ],
   "activationEvents": [
-    "onLanguage:javascript",
-    "onLanguage:typescript",
-    "onLanguage:javascriptreact",
-    "onLanguage:typescriptreact"
+    "onStartupFinished"
   ],
   "main": "./out/extension.js",
   "contributes": {
@@ -35,6 +32,16 @@
           "type": "string",
           "default": "#ffffff",
           "description": "Color to use for SVG icons (replaces currentColor)"
+        },
+        "jsdocImagePreview.position": {
+          "type": "string",
+          "enum": ["gutter", "inline"],
+          "default": "gutter",
+          "enumDescriptions": [
+            "Show icon in the gutter (left of line numbers, may overlap with breakpoints)",
+            "Show icon inline before the code (does not overlap with breakpoints)"
+          ],
+          "description": "Where to display the preview icon"
         }
       }
     }
