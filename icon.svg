@@ -1,21 +1,24 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
   <defs>
     <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#667eea"/>
-      <stop offset="100%" style="stop-color:#764ba2"/>
+      <stop offset="0%" style="stop-color:#6366f1"/>
+      <stop offset="100%" style="stop-color:#8b5cf6"/>
     </linearGradient>
   </defs>
   <!-- Background -->
   <rect width="128" height="128" rx="24" fill="url(#bg)"/>
-  <!-- Eye icon (preview symbol) -->
-  <g fill="none" stroke="#ffffff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
-    <!-- Eye outline -->
-    <path d="M24 64c0 0 16-24 40-24s40 24 40 24s-16 24-40 24s-40-24-40-24"/>
-    <!-- Pupil -->
-    <circle cx="64" cy="64" r="12" fill="#ffffff"/>
-    <!-- Small icon symbol in corner -->
-    <rect x="82" y="82" width="24" height="24" rx="4" fill="#ffffff" stroke="none" opacity="0.9"/>
-    <path d="M88 94l6-6 6 6" stroke="#667eea" stroke-width="2"/>
-    <circle cx="91" cy="88" r="2" fill="#667eea"/>
+
+  <!-- Magnifying glass -->
+  <g fill="none" stroke="#ffffff" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Glass circle -->
+    <circle cx="52" cy="52" r="28" fill="rgba(255,255,255,0.1)"/>
+    <!-- Handle -->
+    <line x1="72" y1="72" x2="100" y2="100"/>
+  </g>
+
+  <!-- Icon symbol inside magnifier -->
+  <g transform="translate(36, 36)">
+    <!-- Small star/sparkle icon -->
+    <path d="M16 4 L18 12 L26 14 L18 16 L16 24 L14 16 L6 14 L14 12 Z" fill="#ffffff" opacity="0.95"/>
   </g>
 </svg>
