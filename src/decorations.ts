@@ -53,9 +53,9 @@ export async function updateDecorations(editor: vscode.TextEditor): Promise<void
                     decorationType = vscode.window.createTextEditorDecorationType({
                         before: {
                             contentIconPath: vscode.Uri.file(imagePath),
-                            margin: '0 4px 0 0',
                             width: `${config.imageSize}px`,
                             height: `${config.imageSize}px`,
+                            textDecoration: `none; position: absolute; z-index: 1; margin-top: -${config.imageSize}px; pointer-events: none;`,
                         },
                     });
                 } else {
