@@ -51,13 +51,13 @@ export async function updateDecorations(editor: vscode.TextEditor): Promise<void
                 let range: vscode.Range;
 
                 if (config.position === 'inline') {
-                    // inline 모드: 컴포넌트명 바로 뒤에 아이콘 표시
+                    // inline 모드: 컴포넌트명 바로 뒤에 아이콘 표시 (글자 크기와 동일)
                     decorationType = vscode.window.createTextEditorDecorationType({
                         after: {
                             contentIconPath: vscode.Uri.file(imagePath),
-                            margin: '0 0 0 4px',
-                            width: '1em',
-                            height: '1em',
+                            margin: '0 1ch 0 1ch',
+                            width: '1ch',
+                            height: '1ch',
                         },
                     });
                     // 컴포넌트명 끝 위치에 range 설정
