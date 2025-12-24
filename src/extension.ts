@@ -39,10 +39,26 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
         context.subscriptions
     );
 
-    // 초기 실행
-    if (vscode.window.activeTextEditor) {
-        updateDecorations(vscode.window.activeTextEditor);
-    }
+    // 테마 변경 시 데코레이션 새로 적용 (배경색 변경을 위해)
+    vscode.window.onDidChangeActiveColorTheme(
+        () => {
+            clearDecorations();
+            vscode.window.visibleTextEditors.forEach((editor) => {
+                updateDecorations(editor);
+            });
+        },
+        null,
+        context.subscriptions
+    );
+
+    // 초기 실행: 현재 열려있는 모든 에디터에 대해 데코레이션 적용
+    // 약간의 딜레이를 주어 에디터가 완전히 준비된 후 실행
+    setTimeout(() => {
+        // 모든 visible 에디터에 대해 적용
+        vscode.window.visibleTextEditors.forEach((editor) => {
+            updateDecorations(editor);
+        });
+    }, 100);
 }
 
 export function deactivate(): void {
