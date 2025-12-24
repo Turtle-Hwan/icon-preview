@@ -7,7 +7,7 @@ import * as os from 'os';
 import * as crypto from 'crypto';
 
 // 캐시 디렉토리
-const cacheDir = path.join(os.tmpdir(), 'jsdoc-image-preview-cache');
+const cacheDir = path.join(os.tmpdir(), 'icon-preview-cache');
 
 // 데코레이션 타입 맵 (파일+라인별로 관리)
 const decorationTypes = new Map<string, vscode.TextEditorDecorationType>();
@@ -22,7 +22,7 @@ function log(message: string) {
 }
 
 export function activate(context: vscode.ExtensionContext) {
-    outputChannel = vscode.window.createOutputChannel('JSDoc Image Preview');
+    outputChannel = vscode.window.createOutputChannel('Icon Preview');
     context.subscriptions.push(outputChannel);
 
     log('Extension activated');
@@ -153,7 +153,7 @@ async function downloadImage(originalUrl: string): Promise<string> {
 
             const buffer = Buffer.from(base64Data, 'base64');
             if (ext === 'svg') {
-                const config = vscode.workspace.getConfiguration('jsdocImagePreview');
+                const config = vscode.workspace.getConfiguration('iconPreview');
                 const svgColor = config.get<string>('svgColor', '#ffffff');
                 const processedSvg = processSvgContent(buffer.toString('utf-8'), svgColor);
                 fs.writeFileSync(filePath, processedSvg);
@@ -188,7 +188,7 @@ async function downloadImage(originalUrl: string): Promise<string> {
 
         const dataStr = data.toString('utf-8');
         if (contentType.includes('svg') || url.endsWith('.svg') || dataStr.includes('<svg')) {
-            const config = vscode.workspace.getConfiguration('jsdocImagePreview');
+            const config = vscode.workspace.getConfiguration('iconPreview');
             const svgColor = config.get<string>('svgColor', '#ffffff');
             const processedSvg = processSvgContent(dataStr, svgColor);
             fs.writeFileSync(svgPath, processedSvg);
@@ -329,7 +329,7 @@ async function findImportedSymbolsWithPreview(
  * 데코레이션 업데이트
  */
 async function updateDecorations(editor: vscode.TextEditor) {
-    const config = vscode.workspace.getConfiguration('jsdocImagePreview');
+    const config = vscode.workspace.getConfiguration('iconPreview');
     if (!config.get<boolean>('enabled', true)) {
         return;
     }

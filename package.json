@@ -1,39 +1,58 @@
 {
-  "name": "jsdoc-image-preview",
-  "displayName": "JSDoc Image Preview",
-  "description": "Preview images from JSDoc @preview tags in the gutter",
+  "name": "icon-preview",
+  "displayName": "Icon Preview",
+  "description": "Preview icons in the gutter from @preview tags - supports Lucide and more",
   "version": "0.1.0",
-  "publisher": "hankim",
+  "publisher": "turtle-hwan",
   "engines": {
     "vscode": "^1.74.0"
   },
   "categories": [
+    "Visualization",
     "Other"
   ],
+  "keywords": [
+    "icon",
+    "preview",
+    "lucide",
+    "gutter",
+    "svg",
+    "react",
+    "jsdoc"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Turtle-Hwan/icon-preview"
+  },
+  "homepage": "https://github.com/Turtle-Hwan/icon-preview#readme",
+  "bugs": {
+    "url": "https://github.com/Turtle-Hwan/icon-preview/issues"
+  },
+  "icon": "icon.png",
   "activationEvents": [
     "onStartupFinished"
   ],
   "main": "./out/extension.js",
   "contributes": {
     "configuration": {
-      "title": "JSDoc Image Preview",
+      "title": "Icon Preview",
       "properties": {
-        "jsdocImagePreview.enabled": {
+        "iconPreview.enabled": {
           "type": "boolean",
           "default": true,
-          "description": "Enable/disable image preview in gutter"
+          "description": "Enable/disable icon preview in gutter"
         },
-        "jsdocImagePreview.imageSize": {
+        "iconPreview.imageSize": {
           "type": "number",
           "default": 16,
           "description": "Size of the gutter icon in pixels"
         },
-        "jsdocImagePreview.svgColor": {
+        "iconPreview.svgColor": {
           "type": "string",
           "default": "#ffffff",
           "description": "Color to use for SVG icons (replaces currentColor)"
         },
-        "jsdocImagePreview.position": {
+        "iconPreview.position": {
           "type": "string",
           "enum": ["gutter", "inline"],
           "default": "gutter",
