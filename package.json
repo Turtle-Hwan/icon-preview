@@ -2,7 +2,7 @@
   "name": "icon-preview",
   "displayName": "Icon Preview",
   "description": "Preview icons in the gutter from @preview tags - supports Lucide and more",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "publisher": "turtle-hwan",
   "author": {
     "name": "Turtle-Hwan",
