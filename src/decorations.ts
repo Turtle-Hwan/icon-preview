@@ -44,20 +44,22 @@ export async function updateDecorations(editor: vscode.TextEditor): Promise<void
 
         for (const symbolInfo of symbols) {
             try {
-                const imagePath = await downloadImage(symbolInfo.url);
+                // 아이콘 크기: config.imageSize 사용 (기본값은 editor.fontSize)
+                const iconSize = config.imageSize;
+
+                // SVG에 크기 적용
+                const imagePath = await downloadImage(symbolInfo.url, iconSize);
                 const key = `${document.uri.toString()}:${symbolInfo.line}:${symbolInfo.column}`;
 
                 let decorationType: vscode.TextEditorDecorationType;
                 let range: vscode.Range;
 
                 if (config.position === 'inline') {
-                    // inline 모드: 컴포넌트명 바로 뒤에 아이콘 표시 (글자 크기와 동일)
+                    // inline 모드: 컴포넌트명 바로 뒤에 아이콘 표시
                     decorationType = vscode.window.createTextEditorDecorationType({
                         after: {
                             contentIconPath: vscode.Uri.file(imagePath),
-                            margin: '0 1ch 0 1ch',
-                            width: '1ch',
-                            height: '1ch',
+                            margin: `0 ${iconSize / 2}px 0 ${iconSize / 2}px`,
                         },
                     });
                     // 컴포넌트명 끝 위치에 range 설정

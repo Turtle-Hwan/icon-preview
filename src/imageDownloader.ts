@@ -5,7 +5,6 @@ import * as path from 'path';
 import * as crypto from 'crypto';
 import { FetchResult } from './types';
 import { log } from './logger';
-import { getConfig } from './config';
 import { cacheDir, fileExists, writeFile } from './cache';
 
 function transformUrl(url: string): string {
@@ -23,36 +22,26 @@ function isDarkTheme(): boolean {
     return theme === vscode.ColorThemeKind.Dark || theme === vscode.ColorThemeKind.HighContrast;
 }
 
-function getContrastBackgroundColor(): string {
-    return isDarkTheme() ? '#ffffff' : '#1e1e1e';
+function getSvgColor(): string {
+    // 다크 테마면 흰색, 라이트 테마면 검정색
+    return isDarkTheme() ? '#ffffff' : '#000000';
 }
 
-function addBackgroundToSvg(svg: string, bgColor: string): string {
-    // viewBox 파싱
-    const viewBoxMatch = svg.match(/viewBox=["']([^"']+)["']/);
-    if (!viewBoxMatch) {
-        // viewBox가 없으면 width/height에서 추론
-        const widthMatch = svg.match(/width=["'](\d+)["']/);
-        const heightMatch = svg.match(/height=["'](\d+)["']/);
-        const width = widthMatch ? parseInt(widthMatch[1]) : 24;
-        const height = heightMatch ? parseInt(heightMatch[1]) : 24;
-        const bgRect = `<rect x="0" y="0" width="${width}" height="${height}" fill="${bgColor}" rx="2"/>`;
-        return svg.replace(/<svg([^>]*)>/, `<svg$1>${bgRect}`);
-    }
-
-    const [minX, minY, vbWidth, vbHeight] = viewBoxMatch[1].split(/\s+/).map(Number);
-    const bgRect = `<rect x="${minX}" y="${minY}" width="${vbWidth}" height="${vbHeight}" fill="${bgColor}" rx="2"/>`;
-    return svg.replace(/<svg([^>]*)>/, `<svg$1>${bgRect}`);
-}
-
-function processSvgContent(content: string, color: string = '#ffffff'): string {
+function processSvgContent(content: string, size?: number): string {
+    const color = getSvgColor();
     let processed = content.replace(/currentColor/gi, color);
     if (!processed.includes('stroke=') && !processed.includes('fill=')) {
         processed = processed.replace('<svg', `<svg fill="${color}"`);
     }
-    // 테마에 맞는 배경색 추가
-    const bgColor = getContrastBackgroundColor();
-    processed = addBackgroundToSvg(processed, bgColor);
+
+    // inline 모드용으로 크기를 지정하면 SVG에 width/height 강제 적용
+    if (size) {
+        // 기존 width/height 속성 제거 후 새로 추가
+        processed = processed.replace(/\s*width="[^"]*"/gi, '');
+        processed = processed.replace(/\s*height="[^"]*"/gi, '');
+        processed = processed.replace('<svg', `<svg width="${size}" height="${size}"`);
+    }
+
     return processed;
 }
 
@@ -99,9 +88,9 @@ function getThemeSuffix(): string {
     return isDarkTheme() ? 'dark' : 'light';
 }
 
-export async function downloadImage(originalUrl: string): Promise<string> {
-    const config = getConfig();
+export async function downloadImage(originalUrl: string, inlineSize?: number): Promise<string> {
     const themeSuffix = getThemeSuffix();
+    const sizeSuffix = inlineSize ? `-${inlineSize}px` : '';
 
     // data:image URL 처리
     if (originalUrl.startsWith('data:image')) {
@@ -111,7 +100,7 @@ export async function downloadImage(originalUrl: string): Promise<string> {
             const mimeType = match[1];
             const ext = mimeType === 'svg+xml' ? 'svg' : mimeType;
             const base64Data = match[2];
-            const filePath = path.join(cacheDir, `${hash}-${themeSuffix}.${ext}`);
+            const filePath = path.join(cacheDir, `${hash}-${themeSuffix}${sizeSuffix}.${ext}`);
 
             if (await fileExists(filePath)) {
                 log(`Cache hit (data URL): ${filePath}`);
@@ -120,7 +109,7 @@ export async function downloadImage(originalUrl: string): Promise<string> {
 
             const buffer = Buffer.from(base64Data, 'base64');
             if (ext === 'svg') {
-                const processedSvg = processSvgContent(buffer.toString('utf-8'), config.svgColor);
+                const processedSvg = processSvgContent(buffer.toString('utf-8'), inlineSize);
                 await writeFile(filePath, processedSvg);
             } else {
                 await writeFile(filePath, buffer);
@@ -134,8 +123,8 @@ export async function downloadImage(originalUrl: string): Promise<string> {
     log(`Downloading: ${url} (original: ${originalUrl})`);
 
     const hash = crypto.createHash('md5').update(url).digest('hex');
-    const svgPath = path.join(cacheDir, `${hash}-${themeSuffix}.svg`);
-    const pngPath = path.join(cacheDir, `${hash}-${themeSuffix}.png`);
+    const svgPath = path.join(cacheDir, `${hash}-${themeSuffix}${sizeSuffix}.svg`);
+    const pngPath = path.join(cacheDir, `${hash}-${themeSuffix}${sizeSuffix}.png`);
 
     // 캐시 확인
     if (await fileExists(svgPath)) {
@@ -153,13 +142,13 @@ export async function downloadImage(originalUrl: string): Promise<string> {
 
         const dataStr = data.toString('utf-8');
         if (contentType.includes('svg') || url.endsWith('.svg') || dataStr.includes('<svg')) {
-            const processedSvg = processSvgContent(dataStr, config.svgColor);
+            const processedSvg = processSvgContent(dataStr, inlineSize);
             await writeFile(svgPath, processedSvg);
             log(`Saved SVG to: ${svgPath}`);
             return svgPath;
         } else {
             const ext = path.extname(new URL(url).pathname) || '.png';
-            const filePath = path.join(cacheDir, `${hash}-${themeSuffix}${ext}`);
+            const filePath = path.join(cacheDir, `${hash}-${themeSuffix}${sizeSuffix}${ext}`);
             await writeFile(filePath, data);
             log(`Saved image to: ${filePath}`);
             return filePath;

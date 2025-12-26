@@ -48,8 +48,7 @@
         },
         "iconPreview.imageSize": {
           "type": "number",
-          "default": 16,
-          "description": "Size of the gutter icon in pixels"
+          "description": "Size of the icon in pixels (defaults to editor.fontSize if not set)"
         },
         "iconPreview.svgColor": {
           "type": "string",
@@ -82,7 +81,8 @@
     "vscode:prepublish": "npm run compile",
     "compile": "tsc -p ./",
     "watch": "tsc -watch -p ./",
-    "package": "vsce package"
+    "package": "vsce package",
+    "reinstall": "npm run compile && npx vsce package --no-dependencies && /Applications/Visual\\ Studio\\ Code.app/Contents/Resources/app/bin/code --install-extension icon-preview-0.1.1.vsix --force"
   },
   "devDependencies": {
     "@types/node": "^18.0.0",
