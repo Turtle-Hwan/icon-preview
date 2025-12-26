@@ -85,15 +85,22 @@ export async function findImportedSymbolsWithPreview(
                     const defText = defDoc.getText();
 
                     // @preview URL 찾기
+                    // 1. 먼저 심볼 이름이 정확히 일치하는 경우 찾기
                     const symbolJsDocRegex = new RegExp(
                         `@(?:component\\s+)?@name\\s+${symbol}[\\s\\S]*?@preview\\s+!\\[img\\]\\((data:image[^)]+)\\)(?:\\s*-\\s*(https?://[^\\s*]+))?`,
                         'i'
                     );
                     let previewMatch = defText.match(symbolJsDocRegex);
 
+                    // 2. 심볼 이름이 정확히 일치하지 않으면 일반적인 @preview 패턴 찾기
                     if (!previewMatch) {
-                        const simpleRegex = /@preview\s*(?:[—\-]+\s*)?(?:img\s*[—\-]*\s*)?(https?:\/\/[^\s\*\)]+)/i;
-                        previewMatch = defText.match(simpleRegex);
+                        // import한 심볼이 정의 파일에 존재하는지 확인 (alias 등을 고려)
+                        const symbolExistsRegex = new RegExp(`(?:export\\s+)?(?:const|function|class)\\s+${symbol}\\b`, 'm');
+                        if (symbolExistsRegex.test(defText)) {
+                            // 심볼이 존재하면 가장 가까운 @preview 찾기
+                            const simpleRegex = /@preview\s*(?:[—\-]+\s*)?(?:img\s*[—\-]*\s*)?(https?:\/\/[^\s\*\)]+)/i;
+                            previewMatch = defText.match(simpleRegex);
+                        }
                     }
 
                     if (previewMatch) {
